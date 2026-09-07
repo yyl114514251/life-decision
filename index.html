@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>蓝本 · 生涯决策辅助系统 (Prototype)</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <span class="logo-icon">◇</span>
+        <div>
+          <h1>蓝本 <span class="badge">Prototype v0.1</span></h1>
+          <p class="subtitle">基于多目标优化的大学生生涯决策辅助系统</p>
+        </div>
+      </div>
+      <div class="header-note">
+        <p>输入你的情况，系统将从 8 个维度评估 5 条发展路径</p>
+      </div>
+    </header>
+
+    <main class="main">
+      <!-- Input Panel -->
+      <section class="panel input-panel">
+        <h2 class="panel-title">个人情况输入</h2>
+
+        <div class="form-grid">
+          <div class="field">
+            <label>专业</label>
+            <input type="text" id="major" placeholder="如：软件工程" value="软件工程" />
+          </div>
+
+          <div class="field">
+            <label>年级</label>
+            <select id="grade">
+              <option value="freshman">大一</option>
+              <option value="sophomore" selected>大二</option>
+              <option value="junior">大三</option>
+              <option value="senior">大四</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>成绩排名（前百分之）</label>
+            <select id="gpa">
+              <option value="top5">前 5%</option>
+              <option value="top15" selected>前 15%</option>
+              <option value="top30">前 30%</option>
+              <option value="top50">前 50%</option>
+              <option value="bottom">后 50%</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>家庭经济条件</label>
+            <select id="finance">
+              <option value="poor">经济困难</option>
+              <option value="average" selected>一般</option>
+              <option value="good">较好</option>
+              <option value="wealthy">优渥</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>风险偏好</label>
+            <select id="risk">
+              <option value="conservative">保守（求稳）</option>
+              <option value="moderate" selected>稳健（平衡）</option>
+              <option value="aggressive">激进（敢闯）</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>核心目标（第一优先级）</label>
+            <select id="goal">
+              <option value="money">高收入</option>
+              <option value="stable" selected>稳定安全</option>
+              <option value="academic">学术研究</option>
+              <option value="freedom">自由自主</option>
+              <option value="status">社会地位</option>
+              <option value="family">兼顾家庭</option>
+            </select>
+          </div>
+
+          <div class="field field-full">
+            <label>兴趣方向（可多选，点击切换）</label>
+            <div class="tag-group" id="interests">
+              <span class="tag" data-value="research">科研</span>
+              <span class="tag active" data-value="engineering">工程技术</span>
+              <span class="tag" data-value="product">产品/设计</span>
+              <span class="tag" data-value="management">管理/组织</span>
+              <span class="tag" data-value="stable">稳定安逸</span>
+              <span class="tag" data-value="freedom">自由探索</span>
+            </div>
+          </div>
+
+          <div class="field field-full">
+            <label>特殊约束（可多选）</label>
+            <div class="tag-group" id="constraints">
+              <span class="tag" data-value="noGoAbroad">不考虑出国</span>
+              <span class="tag" data-value="noStartup">不考虑创业</span>
+              <span class="tag" data-value="mustEarn">需尽快赚钱</span>
+              <span class="tag" data-value="stayCity">希望留大城市</span>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-analyze" id="analyzeBtn">开始分析</button>
+      </section>
+
+      <!-- Results Panel -->
+      <section class="panel result-panel" id="resultPanel" style="display:none;">
+        <h2 class="panel-title">分析结果</h2>
+
+        <!-- Top Recommendation -->
+        <div class="recommend-card" id="recommendCard">
+          <div class="recommend-label">推荐路径</div>
+          <div class="recommend-name" id="recName">—</div>
+          <div class="recommend-score">综合匹配度 <span id="recScore">0</span> / 100</div>
+          <div class="recommend-reason" id="recReason"></div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-row">
+          <div class="chart-box">
+            <h3>综合得分对比</h3>
+            <div class="bar-chart" id="barChart"></div>
+          </div>
+          <div class="chart-box">
+            <h3>八维度雷达图（前 3 路径）</h3>
+            <div class="radar-wrap">
+              <svg id="radarChart" viewBox="0 0 400 400"></svg>
+            </div>
+            <div class="radar-legend" id="radarLegend"></div>
+          </div>
+        </div>
+
+        <!-- Comparison Table -->
+        <div class="table-box">
+          <h3>五路径详细对比</h3>
+          <div class="table-scroll">
+            <table id="compareTable">
+              <thead>
+                <tr>
+                  <th>维度</th>
+                  <th>考研</th>
+                  <th>就业</th>
+                  <th>考公</th>
+                  <th>出国</th>
+                  <th>创业</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Milestones -->
+        <div class="milestone-box">
+          <h3>推荐路径 · 关键里程碑（5 年模拟）</h3>
+          <div class="timeline" id="timeline"></div>
+        </div>
+
+        <div class="disclaimer">
+          ⚠️ 本系统为概念验证原型，评分模型基于公开数据与经验假设，仅供参考，不构成决策建议。人生选择无标准答案，请结合自身实际情况判断。
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>蓝本 Blueprint · 生涯决策辅助系统 Prototype · 2026</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
